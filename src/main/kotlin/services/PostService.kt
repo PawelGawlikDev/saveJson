@@ -33,7 +33,7 @@ class PostService (private val client: HttpClient) {
                 val posts = fetchPosts()
                 logger.log(Level.INFO,"Fetching posts")
                 PostSavingService.savePosts(posts)
-            } catch (e: Exception) {
+            } catch (e: JsonPlaceholderNotAvailableException) {
                 logger.log(Level.SEVERE, "Could not fetch posts", e)
             } finally {
                 close()
