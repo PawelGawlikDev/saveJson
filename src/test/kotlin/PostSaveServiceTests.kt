@@ -52,4 +52,13 @@ class PostSaveServiceTests {
             assertEquals(originalPost, parsedPost)
         }
     }
+
+    @Test
+    fun `Test if files save with correct names`(@TempDir tempDir: File) {
+        val subFolder = File(tempDir, "posts")
+        PostSavingService.savePosts(posts, subFolder.path)
+        val savedFile = subFolder.listFiles()?.map{it.name} ?: emptyList()
+        val expectedName = posts[0].id.toString()
+        assertTrue { savedFile[0].contains(expectedName) }
+    }
 }

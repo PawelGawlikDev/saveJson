@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import java.nio.file.Files
 import io.ktor.serialization.kotlinx.json.json
+import org.savejson.interfaces.JsonPlaceholderNotAvailableException
 import org.savejson.model.Post
 import java.nio.file.Paths
 import kotlin.test.assertFailsWith
@@ -71,7 +72,7 @@ class PostServiceTests {
 
     @Test
     fun `Test fetching posts handles error response`() {
-        val errorJsonContent = """{"message": "Wystąpił błąd"}"""
+        val errorJsonContent = """{"message": "Error"}"""
         val errorMockEngine = MockEngine {
             respond(
                 content = errorJsonContent,
@@ -93,7 +94,10 @@ class PostServiceTests {
             assertFailsWith<Exception> {
                 serviceWithError.fetchPosts()
             }.also {
-                assertTrue(it.message!!.contains("Response error ${HttpStatusCode.InternalServerError.description}"))
+                val exception = assertFailsWith<JsonPlaceholderNotAvailableException> {
+                    serviceWithError.fetchPosts()
+                }
+                assertEquals("Could not fetch posts", exception.message)
             }
         }
     }
